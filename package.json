@@ -1,0 +1,13 @@
+{
+  "name": "collections",
+  "version": "1.0.0",
+  "description": "Project for storing Postman collections",
+  "scripts": {
+    "test-t3-g-psk-ns-create": "newman run T3_G_PSK_NS_CREATE.postman_collection.json -e ON-PREM-184.postman_environment.json -g CSO410.postman_globals.json -k --delay-request 2000",
+    "test-t3_g_psk_ns_remove": "newman run T3_G_PSK_NS_REMOVE.postman_collection.json -e ON-PREM-184.postman_environment.json -g CSO410.postman_globals.json -k --delay-request 2000"
+  },
+  "author": "Vlad",
+  "dependencies": {
+    "newman": "^4.3.1"
+  }
+}

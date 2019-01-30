@@ -1,0 +1,117 @@
+{
+	"id": "0b168128-f29c-414e-8005-ce3087d095ed",
+	"values": [
+		{
+			"key": "csp_adm_username",
+			"value": "cspadmin",
+			"description": "",
+			"enabled": true
+		},
+		{
+			"key": "csp_adm_password",
+			"value": "Embe1mpls!",
+			"description": "",
+			"enabled": true
+		},
+		{
+			"key": "opco_adm_username",
+			"value": "opcoadm1@gmail.com",
+			"description": "",
+			"enabled": true
+		},
+		{
+			"key": "opco_adm_password",
+			"value": "Embe1mpls!",
+			"description": "",
+			"enabled": true
+		},
+		{
+			"key": "opco_name",
+			"value": "OPCO200",
+			"description": "",
+			"enabled": true
+		},
+		{
+			"key": "pop2",
+			"value": "POP2",
+			"description": "",
+			"enabled": true
+		},
+		{
+			"key": "pop3",
+			"value": "POP3",
+			"description": "",
+			"enabled": true
+		},
+		{
+			"key": "department_0",
+			"value": "HR",
+			"description": "",
+			"enabled": true
+		},
+		{
+			"key": "department_1",
+			"value": "Marketing",
+			"description": "",
+			"enabled": true
+		},
+		{
+			"key": "department_2",
+			"value": "Sales",
+			"description": "",
+			"enabled": true
+		},
+		{
+			"key": "hub2_wan0_int_gw_ip",
+			"value": "10.179.186.37",
+			"description": "",
+			"enabled": true
+		},
+		{
+			"key": "hub3_wan0_int_gw_ip",
+			"value": "10.179.186.101",
+			"description": "",
+			"enabled": true
+		},
+		{
+			"key": "hub2_wan1_int_gw_ip",
+			"value": "65.124.125.22",
+			"description": "",
+			"enabled": true
+		},
+		{
+			"key": "hub3_wan1_int_gw_ip",
+			"value": "65.124.125.20",
+			"description": "",
+			"enabled": true
+		},
+		{
+			"key": "hub2_wan2_int_gw_ip",
+			"value": "10.179.186.49",
+			"description": "",
+			"enabled": true
+		},
+		{
+			"key": "hub3_wan2_int_gw_ip",
+			"value": "10.179.186.57",
+			"description": "",
+			"enabled": true
+		},
+		{
+			"key": "hub2_wan3_int_gw_ip",
+			"value": "10.179.186.53",
+			"description": "",
+			"enabled": true
+		},
+		{
+			"key": "hub3_wan3_int_gw_ip",
+			"value": "10.179.186.61",
+			"description": "",
+			"enabled": true
+		}
+	],
+	"name": "CSO410 Globals",
+	"_postman_variable_scope": "globals",
+	"_postman_exported_at": "2019-01-29T04:02:21.947Z",
+	"_postman_exported_using": "Postman/6.7.1"
+}

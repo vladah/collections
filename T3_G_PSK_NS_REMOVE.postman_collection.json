@@ -1,0 +1,193 @@
+{
+	"info": {
+		"_postman_id": "60177d7f-0161-4456-8c8c-bea7f9de8b90",
+		"name": "T3_G_PSK_NS_REMOVE",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "get_token_default_project",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b7051374-4a0f-4614-be36-858b01ee6e4e",
+						"exec": [
+							"var token = postman.getResponseHeader(\"X-Subject-Token\");",
+							"var data = JSON.parse(responseBody);",
+							"pm.environment.set(\"token\", token);",
+							"console.log(pm.environment.get(\"token\"));",
+							"pm.environment.set(\"default_project_id\", data.token.project.id);",
+							"console.log(pm.environment.get(\"default_project_id\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"auth\":{\r\n      \"identity\":{\r\n         \"methods\":[\r\n            \"password\"\r\n         ],\r\n         \"password\":{\r\n            \"user\":{\r\n               \"domain\":{\r\n                  \"id\":\"default\"\r\n               },\r\n               \"name\":\"cspadmin\",\r\n               \"password\":\"Embe1mpls!\"\r\n            }\r\n         }\r\n      },\r\n      \"scope\":{\r\n         \"project\":{\r\n            \"domain\":{\r\n               \"id\":\"default\"\r\n            },\r\n            \"name\":\"default-project\"\r\n         }\r\n      }\r\n   }\r\n}"
+				},
+				"url": {
+					"raw": "http://{{host_ip}}:5000/v3/auth/tokens",
+					"protocol": "http",
+					"host": [
+						"{{host_ip}}"
+					],
+					"port": "5000",
+					"path": [
+						"v3",
+						"auth",
+						"tokens"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "remove_tenant",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6b684f9f-6b18-4504-ba79-c5c0c1bd92a6",
+						"exec": [
+							"var data = JSON.parse(responseBody);",
+							"console.log(responseBody);",
+							"pm.environment.set(\"jobid\", data.output.jobid);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "X-Auth-Token",
+						"type": "text",
+						"value": "{{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"input\":{\r\n      \"job_name_prefix\":\"Tenant Delete\",\r\n      \"tenant_name\":\"{{tenant_name}}\",\r\n      \"remove_tenant\":true,\r\n      \"forced\":true,\r\n      \"sites\":[\r\n\r\n      ]\r\n   }\r\n}"
+				},
+				"url": {
+					"raw": "https://{{host_ip}}/tssm/remove-site",
+					"protocol": "https",
+					"host": [
+						"{{host_ip}}"
+					],
+					"path": [
+						"tssm",
+						"remove-site"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get_job_status_tenant_remove",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7376325c-53b3-4d74-bd54-3511e8a23f6d",
+						"exec": [
+							"    var data = JSON.parse(responseBody);",
+							"    job_status = data.job.status;",
+							"    console.log(job_status);",
+							"    if (job_status == \"in-progress\") {",
+							"        postman.setNextRequest(\"get_job_status_tenant_remove\");",
+							"        console.log(\"Tenant removal in progress...\");",
+							"    }",
+							"    else if ( job_status == \"success\") {",
+							"        console.log(\"Tenant removed\");",
+							"",
+							"    } else {",
+							"        postman.setNextRequest(null);",
+							"        console.log(\"Failure in Removing Tenant\");",
+							"    }    "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "X-Auth-Token",
+						"value": "{{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://{{host_ip}}/job-service/job/{{jobid}}",
+					"protocol": "https",
+					"host": [
+						"{{host_ip}}"
+					],
+					"path": [
+						"job-service",
+						"job",
+						"{{jobid}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "9acfe60b-9939-4e24-9861-9cf43dad0086",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "4a948f8b-a68b-49cf-82ea-76bd7d2ed5b5",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "a8b24a9a-0d9c-4e8f-9f2a-e7816728419f",
+			"key": "tenant_name",
+			"value": "t3_g_psk_ns",
+			"type": "string"
+		}
+	]
+}

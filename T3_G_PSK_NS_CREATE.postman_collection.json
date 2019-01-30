@@ -1,0 +1,298 @@
+{
+	"info": {
+		"_postman_id": "9e39f352-032c-40d6-a9d5-d6955abf8ad7",
+		"name": "T3_G_PSK_NS_CREATE",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "get_token_default_project",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b7051374-4a0f-4614-be36-858b01ee6e4e",
+						"exec": [
+							"var token = postman.getResponseHeader(\"X-Subject-Token\");",
+							"var data = JSON.parse(responseBody);",
+							"pm.environment.set(\"token\", token);",
+							"console.log(pm.environment.get(\"token\"));",
+							"pm.environment.set(\"default_project_id\", data.token.project.id);",
+							"console.log(pm.environment.get(\"default_project_id\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"auth\":{\r\n      \"identity\":{\r\n         \"methods\":[\r\n            \"password\"\r\n         ],\r\n         \"password\":{\r\n            \"user\":{\r\n               \"domain\":{\r\n                  \"id\":\"default\"\r\n               },\r\n               \"name\":\"cspadmin\",\r\n               \"password\":\"Embe1mpls!\"\r\n            }\r\n         }\r\n      },\r\n      \"scope\":{\r\n         \"project\":{\r\n            \"domain\":{\r\n               \"id\":\"default\"\r\n            },\r\n            \"name\":\"default-project\"\r\n         }\r\n      }\r\n   }\r\n}"
+				},
+				"url": {
+					"raw": "http://{{host_ip}}:5000/v3/auth/tokens",
+					"protocol": "http",
+					"host": [
+						"{{host_ip}}"
+					],
+					"port": "5000",
+					"path": [
+						"v3",
+						"auth",
+						"tokens"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get_roles_tenant_admin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6a0a2679-a844-44c5-b28b-e73bf35f740a",
+						"exec": [
+							"var data = JSON.parse(responseBody);",
+							"for (var i = 0;  i < data.role.length; i++) {",
+							"    var obj = data.role[i];",
+							"    if (obj.fq_name.includes(\"_member_\")) {",
+							"        pm.environment.set(\"tenant_admin\", obj.uuid);",
+							"        console.log(obj.uuid);",
+							"    }",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-Auth-Token",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://{{host_ip}}:443/iamsvc/role",
+					"protocol": "https",
+					"host": [
+						"{{host_ip}}"
+					],
+					"port": "443",
+					"path": [
+						"iamsvc",
+						"role"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "tenant_admin_owner",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6a0a2679-a844-44c5-b28b-e73bf35f740a",
+						"exec": [
+							"var data = JSON.parse(responseBody);",
+							"pm.environment.set(\"tenant_admin_owner\", data.role.perms2.owner);",
+							"console.log(\"tenant_admin_owner \" + pm.environment.get(\"tenant_admin_owner\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-Auth-Token",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://{{host_ip}}:443/iamsvc/role/{{tenant_admin}}",
+					"protocol": "https",
+					"host": [
+						"{{host_ip}}"
+					],
+					"port": "443",
+					"path": [
+						"iamsvc",
+						"role",
+						"{{tenant_admin}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create_tenant",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "dcfd9920-e9bd-4340-a6cb-c1d049504366",
+						"exec": [
+							"var data = JSON.parse(responseBody);",
+							"pm.environment.set(\"jobid\", data.output.jobid);",
+							"console.log(pm.environment.get(\"jobid\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "X-Auth-Token",
+						"type": "text",
+						"value": "{{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"input\":{\r\n      \"password_expiration_radio\":\"never\",\r\n      \"tenant_name\":\"{{tenant_name}}\",\r\n      \"tenant_admin\":{\r\n         \"admin_user_name\":\"tenadm5@gmail.com\",\r\n         \"roles\":[\r\n            \"{{tenant_admin}}\"\r\n         ],\r\n         \"first_name\":\"Vladimir\",\r\n         \"last_name\":\"Hale\",\r\n         \"password_expiration_interval\":0\r\n      },\r\n      \"selected_roles\":[\r\n         {\r\n                                           \r\n            \"fq_name\":[\r\n               \"default-domain\",\r\n               \"default-project\",\r\n               \"{{tenant_admin}}\"\r\n            ],\r\n                                      \r\n                              \r\n            \"uuid\":\"{{tenant_admin}}\",\r\n            \"creator\":\"admin\",\r\n            \"href\":null,\r\n            \"other_definition\":null,\r\n            \"parent_uuid\":null,\r\n            \"parent_href\":null,\r\n            \"parent_type\":null,\r\n            \"capabilities\":[\r\n               \"Site Groups:C,R,U,D\",\r\n               \"Report Definitions SD-WAN:C,D,Run/Preview,Send,R,U\",\r\n               \"Department:C,R,D\",\r\n               \"Web Filtering:Manage Filter,Create Alert,R,Create Report\",\r\n               \"Antispam:Manage Filter,Create Alert,R,Create Report\",\r\n               \"Tenant SignatureDatabase:R,Install\",\r\n               \"IPSec VPNs:Manage Filter,Create Alert,R,Create Report\",\r\n               \"Application Visibility:R\",\r\n               \"SD-WAN Policy:R,U,Deploy\",\r\n               \"Device Events:Manage Filter,Create Alert,R\",\r\n               \"Service:C,R,U,D\",\r\n               \"Schedule:C,R,U,D\",\r\n               \"Tenant GeoMap:R\",\r\n               \"AppSignature:C,R,U,D\",\r\n               \"Network Services:Start,R,Disable,U,D\",\r\n               \"Antivirus:Manage Filter,Create Alert,R,Create Report\",\r\n               \"Application SLA Performance:R\",\r\n               \"FirewallPolicy:C,R,U,D,Deploy\",\r\n               \"Job:ScheduleDelete,ScheduleUpdate,R,Retry\",\r\n               \"Generated Reports SD-WAN:R,D\",\r\n               \"Address:C,R,U,D\",\r\n               \"Security Alert Definitions:C,R,U,D\",\r\n               \"Screen:Manage Filter,Create Alert,R,Create Report\",\r\n               \"Alerts:R,D,Jump to Event Viewer\",\r\n               \"Tenant Application SLA Profiles:C,R,U,D\",\r\n               \"Roles:C,R,U,D\",\r\n               \"Identity Management:R,U\",\r\n               \"Devices:R,RMA,Reboot,PushLicense,Activate\",\r\n               \"UTM:C,R,U,D\",\r\n               \"Images:R\",\r\n               \"Cloud Breakout Profiles:C,R,U,D,Assign Sites\",\r\n               \"Alarms:R,D\",\r\n               \"Link Switch Events:R\",\r\n               \"Mesh Tags:C,R,D\",\r\n                                            \r\n               \"Deployments:Deploy,R,Schedule\",\r\n               \"VPN Authentication:Renew,R,CRL\",\r\n               \"Firewall:Manage Filter,Create Alert,R,Create Report\",\r\n               \"Site LAN Segment:C,D,Deploy,Deploy History,R,Re-assign\",\r\n               \"Content Filtering:Manage Filter,Create Alert,R,Create Report\",\r\n               \"Report Definitions Security:C,D,Run/Preview,Send,R,U\",\r\n               \"IPS:Manage Filter,Create Alert,R,Create Report\",\r\n               \"AuditLogs:Purge,R\",\r\n               \"SSL Policy:C,R,U,D,Deploy\",\r\n               \"Licenses:Push,C,R,U,D\",\r\n               \"Users:C,R,U,D\",\r\n               \"SD-WAN Alert Definitions:R\",\r\n               \"Generated Reports Security:R,D\",\r\n               \"All Events:Manage Filter,Create Alert,R,Create Report\",\r\n                                            \r\n               \"Certificates:C,R,U,D\",\r\n               \"Threat Map (Live):R\",\r\n               \"NAT:C,R,U,D,Deploy\",\r\n               \"Site Management:R,C,Upgrade,D,Configure\"\r\n            ],\r\n            \"name\":\"_member_\",\r\n            \"administrative_domain\":null,\r\n            \"type_\":null,\r\n            \"perms2\":null,\r\n            \"id_perms\":null,\r\n                   \r\n                                       \r\n                                                         \r\n                   \r\n                \r\n              \r\n                                                              \r\n            \"display_name\":\"Tenant Admin\",\r\n            \"is_hidden\":false,\r\n            \"role_scope\":\"Enterprise\",\r\n            \"role_type\":\"pre-canned\",\r\n            \"description\":\"\"\r\n         }\r\n      ],\r\n      \"supported_deployment_scenario\":[\r\n         \"managed_wan_v2\",\r\n         \"managed_wan\"\r\n      ],\r\n      \"create_dvpn_threshold\":5,\r\n      \"delete_dvpn_threshold\":2,\r\n      \"default_ssl_proxy_profile\":{\r\n         \"enabled\":false\r\n      },\r\n      \"auto_renew_enabled\":false,\r\n      \"expire_length\":\"2w\",\r\n      \"ipsec_vpn_cfg\":{\r\n         \"vpn_authentication\":{\r\n            \"preshared_key_enabled\":true\r\n                                                                \r\n         },\r\n         \"overlay_tunnel_encryption\":{\r\n            \"encryption_type\":\"aes-256-gcm\"\r\n         }\r\n      },\r\n      \"properties\":{\r\n         \"property\":[\r\n            {\r\n               \"name\":\"default-fullmesh-type\",\r\n               \"value\":\"redundant-sparse\"\r\n            },\r\n            {\r\n               \"name\":\"connect-different-underlay-link-types\",\r\n               \"value\":false\r\n            },\r\n            {\r\n               \"name\":\"default-max-links-per-site-in-fullmesh\",\r\n               \"value\":\"3\"\r\n            },\r\n            {\r\n               \"name\":\"fullmesh-with-cloudhub\",\r\n               \"value\":true\r\n            },\r\n            {\r\n               \"name\":\"default-tenant-topology\",\r\n               \"value\":\"mesh\"\r\n            },\r\n            {\r\n               \"name\":\"sla_mgmt\",\r\n               \"value\":\"FINE\"\r\n            },\r\n            {\r\n               \"name\":\"default-tunnel-type\",\r\n               \"value\":\"GRE_IPSEC\"\r\n            },\r\n            {\r\n               \"name\":\"ip-encoding-enabled\",\r\n               \"value\":true\r\n            },\r\n            {\r\n               \"name\":\"dvpn-enabled\",\r\n               \"value\":true\r\n            },\r\n            {\r\n               \"name\":\"mesh-tags\",\r\n               \"value\":[\r\n                  \"MPLS\",\r\n                  \"INTERNET\"\r\n               ]\r\n            },\r\n            {\r\n               \"name\":\"create_dvpn_threshold\",\r\n               \"value\":5\r\n            },\r\n            {\r\n               \"name\":\"delete_dvpn_threshold\",\r\n               \"value\":2\r\n            },\r\n            {\r\n               \"name\":\"l3vpn-per-department\",\r\n               \"value\":true\r\n            }\r\n         ]\r\n      },\r\n      \"managed_wan_topology_v2\":{\r\n\r\n      },\r\n      \"vpn\":[\r\n         {\r\n            \"vpn_name\":\"{{tenant_name}}_DefaultVPN\",\r\n            \"tunnel_type\":\"GRE_IPSEC\",\r\n            \"topology\":\"mesh\",\r\n            \"max_links_per_site\":3\r\n         },\r\n         {\r\n            \"vpn_name\":\"{{department_1}}\",\r\n            \"tunnel_type\":\"GRE_IPSEC\",\r\n            \"topology\":\"mesh\",\r\n            \"max_links_per_site\":3\r\n         },\r\n         {\r\n            \"vpn_name\":\"{{department_0}}\",\r\n            \"tunnel_type\":\"GRE_IPSEC\",\r\n            \"topology\":\"mesh\",\r\n            \"max_links_per_site\":3\r\n         },\r\n         {\r\n            \"vpn_name\":\"{{department_2}}\",\r\n            \"tunnel_type\":\"GRE_IPSEC\",\r\n            \"topology\":\"mesh\",\r\n            \"max_links_per_site\":3\r\n         },\r\n         {\r\n            \"vpn_name\":\"{{tenant_name}}_L3VPN\",\r\n            \"topology\":\"standalone\"\r\n         }\r\n      ],\r\n      \"departments\":[\r\n         {\r\n            \"department_name\":\"Default\",\r\n            \"vpn_name\":\"{{tenant_name}}_DefaultVPN\"\r\n         },\r\n         {\r\n            \"department_name\":\"{{department_1}}\",\r\n            \"vpn_name\":\"{{department_1}}\"\r\n         },\r\n         {\r\n            \"department_name\":\"{{department_2}}\",\r\n            \"vpn_name\":\"{{department_2}}\"\r\n         },\r\n         {\r\n            \"department_name\":\"{{department_0}}\",\r\n            \"vpn_name\":\"{{department_0}}\"\r\n         }\r\n      ]\r\n   }\r\n}"
+				},
+				"url": {
+					"raw": "https://{{host_ip}}/tssm/onboard-tenant",
+					"protocol": "https",
+					"host": [
+						"{{host_ip}}"
+					],
+					"path": [
+						"tssm",
+						"onboard-tenant"
+					]
+				},
+				"description": "create_tenant_pki_fm"
+			},
+			"response": []
+		},
+		{
+			"name": "get_job_status_tenant_create",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7376325c-53b3-4d74-bd54-3511e8a23f6d",
+						"exec": [
+							"var data = JSON.parse(responseBody);\r",
+							"job_status = data.job.status;\r",
+							"console.log(job_status);\r",
+							"if (job_status == \"in-progress\") {\r",
+							"    postman.setNextRequest(\"get_job_status_tenant_create\");\r",
+							"    console.log(\"Tenant creation in progress...\");\r",
+							"}\r",
+							"else if ( job_status == \"success\") {\r",
+							"    console.log(\"Tenant created\");\r",
+							"\r",
+							"} else {\r",
+							"    postman.setNextRequest(null);\r",
+							"    console.log(\"Failure in creating tenant\");\r",
+							"}    "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "X-Auth-Token",
+						"value": "{{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://{{host_ip}}/job-service/job/{{jobid}}",
+					"protocol": "https",
+					"host": [
+						"{{host_ip}}"
+					],
+					"path": [
+						"job-service",
+						"job",
+						"{{jobid}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "24d33701-c82b-4ad8-b58c-ef38cb6d2d28",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "cbde068b-442e-4359-8f0b-e47ed0787161",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "982ed7ba-1244-40aa-a527-0504832057cf",
+			"key": "tenant_name",
+			"value": "t3_g_psk_ns",
+			"type": "string"
+		}
+	]
+}
